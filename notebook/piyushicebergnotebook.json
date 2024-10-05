@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e60e568e-508b-4632-b351-660cee430eb3"
+				"spark.autotune.trackingId": "511cbb9b-1705-4be7-ad73-440a4a96074b"
 			}
 		},
 		"metadata": {
@@ -25,7 +25,7 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
@@ -53,9 +53,26 @@
 				"source": [
 					"spark.conf.set(\"spark.sql.catalog.spark_catalog\", \"org.apache.iceberg.spark.SparkCatalog\")\r\n",
 					"spark.conf.set(\"spark.sql.catalog.spark_catalog.type\", \"hadoop\")\r\n",
-					"spark.conf.set(\"spark.sql.catalog.spark_catalog.warehouse\", \"abfss://<your-onelake-ws>@msit-onelake.dfs.fabric.microsoft.com/<your-lakehouse-name/id>/Files/<your-file-name-in-onelake-where-data-is-uploaded>\")"
+					"# spark.conf.set(\"spark.sql.catalog.spark_catalog.warehouse\", \"abfss://pd_westus2@dxt-onelake.dfs.fabric.microsoft.com/lh_westus2.Lakehouse/Files\")\r\n",
+					"spark.conf.set(\"spark.sql.catalog.spark_catalog.warehouse\", \"abfss://sparkicebergtables@pdstoragefirewall.dfs.core.windows.net/warehouse\")\r\n",
+					"\r\n",
+					"# Assume df is a PySpark DataFrame\r\n",
+					"df = spark.createDataFrame([\r\n",
+					"    (1, \"Apple\", 1.5),\r\n",
+					"    (2, \"Banana\", 0.8),\r\n",
+					"    (3, \"Orange\", 1.2)\r\n",
+					"], [\"id\", \"name\", \"price\"])\r\n",
+					"\r\n",
+					"df.writeTo(\"spark_catalog.warehouse.fruits\").using(\"iceberg\").create()\r\n",
+					"\r\n",
+					"# Write the DataFrame to an Iceberg table\r\n",
+					"# df.write.format(\"iceberg\") \\\r\n",
+					"#    .mode(\"append\") \\\r\n",
+					"#    .save(\"spark_catalog.warehouse.my_iceberg_table\")\r\n",
+					"\r\n",
+					""
 				],
-				"execution_count": null
+				"execution_count": 7
 			}
 		]
 	}
